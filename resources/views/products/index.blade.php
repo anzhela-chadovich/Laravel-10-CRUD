@@ -25,6 +25,7 @@
                         </ul>
                     </div>
                 </div>
+                <form method="GET" action="{{route('products.index')}}" accept-charset="UTF-8" role="search">
                 <div class="table-search">
                     <div>
                         <button class="search-select">
@@ -38,6 +39,7 @@
                         <input class="search-input" type="text" name="search" placeholder="Search product..." value="{{ request('search') }}">
                     </div>
                 </div>
+                </form>
                 <div class="table-product-head">
                     <p>Image</p>
                     <p>Name</p>
@@ -53,28 +55,46 @@
                             <p>{{$product->category}}</p>
                             <p>{{$product->quantity}}</p>
                             <div>
-                                <button class="btn btn-success" >
+                                <a href="{{route('products.edit', $product->id)}}" class="btn-link btn btn-success">
                                     <i class="fas fa-pencil-alt" ></i>
-                                </button>
-                                <button class="btn btn-danger" >
+                                </a>
+                                <form method="POST" action="{{route('products.destroy', $product->id)}}">
+                                    @method('delete')
+                                    @csrf
+                                <button class="btn btn-danger" onclick="deleteConfirm(event)" >
                                     <i class="far fa-trash-alt"></i>
                                 </button>
+                                </form>
                             </div>
                         @endforeach
-
+                    @else
+                        <p>Product not found</p>
                     @endif
 
                 </div>
                 <div class="table-paginate">
-                    <div class="pagination">
-                        <a href="#" disabled>&laquo;</a>
-                        <a class="active-page">1</a>
-                        <a>2</a>
-                        <a>3</a>
-                        <a href="#">&raquo;</a>
-                    </div>
+                    {{$products->links('Layouts.pagination')}}
                 </div>
             </div>
         </section>
     </main>
+<script>
+    window.deleteConfirm = function (e) {
+        e.preventDefault();
+        var form = e.target.form;
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        })
+    }
+</script>
+
 @endsection
